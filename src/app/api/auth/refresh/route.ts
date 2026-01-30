@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1. Verify Token Signature and Payload
     const payload = verifyRefreshToken(refreshToken);
     if (!payload) {
       return NextResponse.json(
@@ -27,7 +26,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. Check Database for token
     const storedToken = (await prisma.refreshToken.findUnique({
       where: { token: refreshToken },
     })) as any;
@@ -39,7 +37,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Check for Revocation or Expiration
     if (storedToken.revokedAt) {
       return NextResponse.json(
         { success: false, error: "Token has been revoked" },
@@ -54,7 +51,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 4. Token Rotation: Generate new tokens and replace the old one
     const newPayload = {
       userId: payload.userId,
       email: payload.email,
@@ -64,16 +60,14 @@ export async function POST(request: NextRequest) {
     const newRefreshToken = generateRefreshToken(newPayload);
 
     await prisma.$transaction([
-      // Delete old token (or mark as revoked, but rotation usually replaces)
       prisma.refreshToken.delete({
         where: { id: storedToken.id },
       }),
-      // Create new token
       prisma.refreshToken.create({
         data: {
           userId: payload.userId,
           token: newRefreshToken,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
           deviceInfo: storedToken.deviceInfo,
         } as any,
       }),

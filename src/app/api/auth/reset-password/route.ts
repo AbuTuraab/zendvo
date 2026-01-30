@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { token, password } = body;
 
-    // 1. Validate Input
     if (!token || !password) {
       return NextResponse.json(
         { success: false, error: "Token and password are required" },
@@ -17,7 +16,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1.1. Validate Token Format (Basic UUID check)
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(token)) {
@@ -27,7 +25,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1.2. Validate Password Strength
     if (!validatePassword(password)) {
       return NextResponse.json(
         {
@@ -42,7 +39,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. Retrieve and Validate Token
     const resetRequest = await prisma.passwordReset.findUnique({
       where: { token },
       include: { user: true },
@@ -69,27 +65,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Update Password and Revoke Sessions in a Transaction
     const hashedPassword = await hashPassword(password);
 
     await prisma.$transaction([
-      // Update user password
       prisma.user.update({
         where: { id: resetRequest.userId },
         data: { passwordHash: hashedPassword },
       }),
-      // Mark token as used
       prisma.passwordReset.update({
         where: { id: resetRequest.id },
         data: { usedAt: new Date() },
       }),
-      // Revoke all refresh tokens
       prisma.refreshToken.deleteMany({
         where: { userId: resetRequest.userId },
       }),
     ]);
 
-    // 4. Send Confirmation Email (Async)
     sendPasswordResetConfirmationEmail(
       resetRequest.user.email,
       resetRequest.user.name || undefined,

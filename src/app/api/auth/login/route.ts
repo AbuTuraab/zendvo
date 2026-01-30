@@ -10,7 +10,6 @@ const LOCK_DURATION_MINUTES = 15;
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. IP-based Rate Limiting (5 attempts per 15 mins)
     const ip =
       request.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
     if (isRateLimited(ip, 5, 15 * 60 * 1000)) {
@@ -23,7 +22,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. Parse and Validate Body
     const body = await request.json();
     const { email, password } = body;
 
@@ -42,20 +40,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Retrieve User
     const user = (await prisma.user.findUnique({
       where: { email: sanitizedEmail },
     })) as any;
 
     if (!user) {
-      // Use timing-safe delay or generic error to prevent enumeration
       return NextResponse.json(
         { success: false, error: "Invalid credentials" },
         { status: 401 },
       );
     }
 
-    // 4. Check Account Lockout
     if (user.lockUntil && user.lockUntil > new Date()) {
       const remainingMinutes = Math.ceil(
         (user.lockUntil.getTime() - Date.now()) / (60 * 1000),
@@ -69,7 +64,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Check User Status
     if (user.status === "unverified") {
       return NextResponse.json(
         {
@@ -87,7 +81,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 6. Verify Password
     const isPasswordValid = await comparePassword(password, user.passwordHash);
 
     if (!isPasswordValid) {
@@ -99,7 +92,7 @@ export async function POST(request: NextRequest) {
         data.lockUntil = new Date(
           Date.now() + LOCK_DURATION_MINUTES * 60 * 1000,
         );
-        data.loginAttempts = 0; // Reset after locking
+        data.loginAttempts = 0;
       }
 
       await prisma.user.update({
@@ -120,13 +113,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 7. Successful Login
-    // Generate Tokens
     const payload = { userId: user.id, email: user.email, role: user.role };
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
-    // Update User Activity and Store Refresh Token in Transaction
+    // Update User Activity and Store Refresh Token
     await prisma.$transaction([
       prisma.user.update({
         where: { id: user.id },
@@ -140,7 +131,7 @@ export async function POST(request: NextRequest) {
         data: {
           userId: user.id,
           token: refreshToken,
-          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
           deviceInfo: request.headers.get("user-agent"),
         } as any,
       }),
@@ -150,7 +141,6 @@ export async function POST(request: NextRequest) {
       `[AUTH_AUDIT] Successful login for user: ${user.id} from IP: ${ip}`,
     );
 
-    // 8. Return Response
     return NextResponse.json(
       {
         success: true,

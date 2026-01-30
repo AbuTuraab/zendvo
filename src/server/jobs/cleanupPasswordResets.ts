@@ -1,9 +1,5 @@
 import { prisma } from "@/lib/prisma";
 
-/**
- * Deletes password reset tokens that are older than 24 hours.
- * This can be run as a cron job or manual script.
- */
 export async function cleanupExpiredTokens() {
   try {
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -11,9 +7,9 @@ export async function cleanupExpiredTokens() {
     const result = await prisma.passwordReset.deleteMany({
       where: {
         OR: [
-          { expiresAt: { lt: new Date() } }, // Already expired
-          { createdAt: { lt: twentyFourHoursAgo } }, // Older than 24 hours
-          { usedAt: { not: null } }, // Already used
+          { expiresAt: { lt: new Date() } },
+          { createdAt: { lt: twentyFourHoursAgo } },
+          { usedAt: { not: null } },
         ],
       },
     });
@@ -28,7 +24,6 @@ export async function cleanupExpiredTokens() {
   }
 }
 
-// If running directly via CLI
 if (require.main === module) {
   cleanupExpiredTokens()
     .then(() => process.exit(0))

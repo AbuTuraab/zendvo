@@ -145,9 +145,6 @@ export async function sendPasswordResetConfirmationEmail(
   }
 }
 
-/**
- * Generate HTML email template with Zendvo branding
- */
 function generateEmailTemplate(otp: string, userName?: string): string {
   return generateBaseTemplate({
     title: "Verify Your Email",
@@ -157,7 +154,6 @@ function generateEmailTemplate(otp: string, userName?: string): string {
         Thank you for signing up with Zendvo! To complete your registration, please verify your email address using the code below:
       </p>
       
-      <!-- OTP Code Box -->
       <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
         <tr>
           <td align="center" style="background-color: #f7fafc; border: 2px dashed #667eea; border-radius: 8px; padding: 30px;">
@@ -187,7 +183,6 @@ function generateForgotPasswordTemplate(
         We received a request to reset your password. Click the button below to choose a new one:
       </p>
       
-      <!-- Reset Button -->
       <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
         <tr>
           <td align="center">
@@ -258,7 +253,6 @@ function generateBaseTemplate({
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-          <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; text-align: center;">
               <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Zendvo</h1>
@@ -266,7 +260,6 @@ function generateBaseTemplate({
             </td>
           </tr>
           
-          <!-- Content -->
           <tr>
             <td style="padding: 40px 30px;">
               <h2 style="margin: 0 0 20px; color: #1a202c; font-size: 24px; font-weight: 600;">
@@ -280,7 +273,6 @@ function generateBaseTemplate({
             </td>
           </tr>
           
-          <!-- Footer -->
           <tr>
             <td style="background-color: #f7fafc; padding: 30px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="margin: 0 0 10px; color: #718096; font-size: 14px;">

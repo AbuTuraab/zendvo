@@ -13,15 +13,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Revoke/Delete the refresh token in the database
-    // Using delete is cleaner for rotation/logout unless audit history of tokens is specifically needed
     try {
       await prisma.refreshToken.delete({
         where: { token: refreshToken },
       });
-    } catch (e) {
-      // If token not found, it might already be gone (logout success either way)
-    }
+    } catch (e) {}
 
     return NextResponse.json(
       { success: true, message: "Logged out successfully" },

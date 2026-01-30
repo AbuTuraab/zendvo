@@ -3,11 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { validateEmail, sanitizeInput } from "@/lib/validation";
 import { isRateLimited } from "@/lib/rate-limiter";
 import { sendForgotPasswordEmail } from "@/server/services/emailService";
-// Use native crypto.randomUUID()
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Rate Limiting (max 3 forgot password requests per hour per IP)
     const ip =
       request.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
     if (isRateLimited(ip, 3)) {
@@ -20,7 +18,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 2. Parse and Validate Request Body
     const body = await request.json();
     const { email } = body;
 
@@ -40,18 +37,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Check if user exists (Internally)
     const user = await prisma.user.findUnique({
       where: { email: sanitizedEmail },
     });
 
-    // 4. If user exists, process reset
     if (user) {
-      // Generate UUID token
       const token = crypto.randomUUID();
-      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
-      // Store in database
       await prisma.passwordReset.create({
         data: {
           userId: user.id,
@@ -61,7 +54,6 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Send email (Async - don't block response)
       sendForgotPasswordEmail(user.email, token, user.name || undefined).catch(
         (err) => console.error("[FORGOT_PASSWORD_EMAIL_ERROR]", err),
       );
@@ -75,7 +67,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Always return success for security
     return NextResponse.json(
       {
         success: true,
