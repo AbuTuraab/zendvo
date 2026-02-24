@@ -60,7 +60,7 @@ export const GiftCard = () => {
           </Link>
         </div>
         <div>
-          <div className="flex gap-5.75 flex-col">
+          <div className="flex gap-5.75 flex-col lg:flex-row">
             <GiftReleaseCard />
             <GiftReleaseCard />
           </div>
