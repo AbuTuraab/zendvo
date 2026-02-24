@@ -5,8 +5,7 @@ Zendvo is a full-stack gifting platform that enables users to send cash gifts th
 
 ## Who is Zendvo For?
 
-- **Diaspora Senders:** Specifically targeting young adults (18-35) in the US, UK, and Canada looking for a more meaningful way to send money home to Nigeria.
-- **Domestic Gifting (Future Phase):** Nigerians sending to Nigerians for birthdays, anniversaries, and holidays where surprise is key.
+- **Domestic Gifting:** Nigerians sending to Nigerians for birthdays, anniversaries, and holidays where surprise is key.
 - **Memorable Occasions:** Perfect for Valentine's Day, graduations, and surprise celebrations where the timing of the gift is as important as the gift itself.
 
 ## Architecture Highlights
