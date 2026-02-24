@@ -4,6 +4,13 @@ import { comparePassword } from "@/lib/auth";
 import { validateEmail, sanitizeInput } from "@/lib/validation";
 import { isRateLimited } from "@/lib/rate-limiter";
 import { generateAccessToken, generateRefreshToken } from "@/lib/tokens";
+import {
+  ACCESS_TOKEN_COOKIE,
+  REFRESH_TOKEN_COOKIE,
+  COOKIE_OPTIONS,
+  ACCESS_TOKEN_MAX_AGE,
+  REFRESH_TOKEN_MAX_AGE,
+} from "@/lib/cookies";
 
 const MAX_LOGIN_ATTEMPTS = 5;
 const LOCK_DURATION_MINUTES = 15;
@@ -141,7 +148,7 @@ export async function POST(request: NextRequest) {
       `[AUTH_AUDIT] Successful login for user: ${user.id} from IP: ${ip}`,
     );
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         success: true,
         data: {
@@ -159,6 +166,18 @@ export async function POST(request: NextRequest) {
       },
       { status: 200 },
     );
+
+    response.cookies.set(ACCESS_TOKEN_COOKIE, accessToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: ACCESS_TOKEN_MAX_AGE,
+    });
+
+    response.cookies.set(REFRESH_TOKEN_COOKIE, refreshToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: REFRESH_TOKEN_MAX_AGE,
+    });
+
+    return response;
   } catch (error) {
     console.error("[LOGIN_ERROR]", error);
     return NextResponse.json(
