@@ -153,20 +153,14 @@ paths:
                   data:
                     type: object
                     properties:
-                      accessToken:
+                      access_token:
                         type: string
-                      refreshToken:
+                      refresh_token:
                         type: string
-                      user:
-                        type: object
         "401":
-          description: Invalid credentials
-        "403":
-          description: Account unverified or suspended
-        "423":
-          description: Account locked
+          description: Invalid email or password
         "429":
-          description: Too many requests
+          description: Too many failed attempts from the same IP
         "500":
           description: Internal server error
 
