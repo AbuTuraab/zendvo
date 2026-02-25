@@ -39,7 +39,7 @@ export const refreshTokens = sqliteTable("RefreshToken", {
 
 export const gifts = sqliteTable("Gift", {
   id: text("id").primaryKey(),
-  senderId: text("senderId").notNull(),
+  senderId: text("senderId"),
   recipientId: text("recipientId").notNull(),
   amount: real("amount").notNull(),
   currency: text("currency").notNull(),
@@ -50,6 +50,12 @@ export const gifts = sqliteTable("Gift", {
   otpExpiresAt: text("otpExpiresAt"),
   otpAttempts: integer("otpAttempts").notNull().default(0),
   transactionId: text("transactionId"),
+  hideAmount: integer("hideAmount", { mode: "boolean" }).notNull().default(false),
+  hideSender: integer("hideSender", { mode: "boolean" }).notNull().default(false),
+  unlockDatetime: text("unlockDatetime"),
+  senderName: text("senderName"),
+  senderEmail: text("senderEmail"),
+  senderAvatar: text("senderAvatar"),
   createdAt: text("createdAt").notNull(),
   updatedAt: text("updatedAt").notNull(),
 });

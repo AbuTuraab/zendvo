@@ -23,6 +23,10 @@ export const validateCurrency = (currency: string): boolean => {
   return supportedCurrencies.includes(currency.toUpperCase());
 };
 
+export const validateFutureDatetime = (date: Date): boolean => {
+  return !isNaN(date.getTime()) && date.getTime() > Date.now();
+};
+
 export const normalizePhoneNumber = (phone: string): string => {
   return phone.replace(/[\s\-().]/g, "");
 };
