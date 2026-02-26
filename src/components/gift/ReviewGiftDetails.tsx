@@ -16,8 +16,8 @@ interface ReviewGiftDetailsProps {
   isLoading?: boolean;
 }
 
-const rowLabel = "text-[12px] text-[#18181B]";
-const rowValue = "text-[12px] text-[#717182] text-right";
+const rowLabel = "text-sm md:text-[14px] text-[#18181B] font-medium";
+const rowValue = "text-sm md:text-[14px] text-[#717182] text-right";
 
 const ReviewGiftDetails: React.FC<ReviewGiftDetailsProps> = ({
   recipientName,
@@ -34,73 +34,90 @@ const ReviewGiftDetails: React.FC<ReviewGiftDetailsProps> = ({
   const total = amount + processingFee;
 
   return (
-    <div className="w-full px-3 py-6 md:py-8">
-      <div className="w-full max-w-[360px] mx-auto rounded-3xl bg-[#FAFAFB] border border-[#EEEEF3] p-4 md:p-5">
-        <h2 className="text-[32px] leading-7 font-semibold text-[#18181B]">
+    <div className="w-full flex justify-center px-4 py-6 md:py-10">
+      <div className="w-full max-w-[400px] rounded-3xl bg-[#FAFAFB] border border-[#EEEEF3] p-5 md:p-6 shadow-sm">
+        <h2 className="text-[24px] md:text-[28px] leading-tight font-semibold text-[#18181B]">
           Review Gift details
         </h2>
-        <p className="text-[10px] leading-4 text-[#717182] mt-2">
+        <p className="text-[12px] md:text-[13px] leading-relaxed text-[#717182] mt-2">
           Please review all details carefully, transactions once completed are
-          irreversible
+          irreversible.
         </p>
 
-        <div className="mt-4 rounded-2xl border border-[#EEEEF3] bg-white p-3 space-y-2">
+        <div className="mt-6 rounded-2xl border border-[#EEEEF3] bg-white p-4 space-y-3 shadow-sm">
+          {/* Recipient */}
           <div className="flex justify-between items-start">
             <p className={rowLabel}>Recipient</p>
             <div className={rowValue}>
-              <p>{recipientName}</p>
-              <p>{recipientPhone}</p>
+              <p className="text-[#18181B] font-medium">{recipientName}</p>
+              <p className="text-[12px] mt-0.5">{recipientPhone}</p>
             </div>
           </div>
-          <div className="flex justify-between">
+
+          {/* Amount */}
+          <div className="flex justify-between items-center pt-2">
             <p className={rowLabel}>Amount</p>
-            <p className={rowValue}>${amount}</p>
+            <p className={rowValue}>${amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
           </div>
-          <div className="flex justify-between">
+
+          {/* Processing Fee */}
+          <div className="flex justify-between items-center pt-2">
             <p className={rowLabel}>Processing Fee</p>
-            <p className={rowValue}>${processingFee}</p>
+            <p className={rowValue}>${processingFee.toLocaleString(undefined, { minimumFractionDigits: 2 })}</p>
           </div>
-          <div className="flex justify-between items-end border-t border-[#EEEEF3] pt-2">
+
+          {/* Total Amount */}
+          <div className="flex justify-between items-end border-t border-[#EEEEF3] pt-4 mt-2">
             <p className={rowLabel}>Total Amount</p>
-            <p className="text-[40px] leading-8 text-[#18181B] font-medium">
-              ${total}
+            <p className="text-[32px] md:text-[36px] leading-none text-[#18181B] font-semibold tracking-tight">
+              ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })}
             </p>
           </div>
-          <div className="flex justify-between pt-2 border-t border-[#EEEEF3]">
+
+          {/* Amount Privacy */}
+          <div className="flex justify-between items-center pt-4 border-t border-[#EEEEF3] mt-2">
             <p className={rowLabel}>Amount Privacy</p>
             <p className={rowValue}>
               {hideAmountUntilUnlock ? "Hide amount sent" : "Visible"}
             </p>
           </div>
-          <div className="flex justify-between">
+
+          {/* Sender Privacy */}
+          <div className="flex justify-between items-center pt-2">
             <p className={rowLabel}>Sender Privacy</p>
             <p className={rowValue}>
               {anonymousUntilUnlock ? "Anonymous" : "Identified"}
             </p>
           </div>
-          <div className="flex justify-between">
+
+          {/* Unlock Date */}
+          <div className="flex justify-between items-start pt-2">
             <p className={rowLabel}>Unlock date and time</p>
-            <p className={rowValue}>{unlockLabel}</p>
+            <p className={`${rowValue} max-w-[150px]`}>{unlockLabel}</p>
           </div>
-          <div className="space-y-1">
-            <p className={rowLabel}>Message for the sender</p>
-            <p className="text-[12px] text-[#717182]">{message || "-"}</p>
+
+          {/* Message */}
+          <div className="space-y-1.5 pt-2">
+            <p className={rowLabel}>Message for the recipient</p>
+            <p className="text-[13px] text-[#717182] bg-[#FAFAFB] p-3 rounded-xl border border-[#EEEEF3] break-words">
+              {message || "No message provided."}
+            </p>
           </div>
         </div>
 
-        <p className="text-[10px] text-[#717182] mt-4">
-          By proceeding, you have accepted{" "}
-          <span className="text-[#5A42DE] font-medium">Zendvo terms</span> and{" "}
-          <span className="text-[#5A42DE] font-medium">Privacy Policy</span>
+        <p className="text-[11px] text-[#717182] mt-6 text-center">
+          By proceeding, you have accepted Zendvo's{" "}
+          <a href="#" className="text-[#5A42DE] font-medium hover:underline">Terms</a> and{" "}
+          <a href="#" className="text-[#5A42DE] font-medium hover:underline">Privacy Policy</a>
         </p>
 
         <Button
           onClick={onProceed}
           isLoading={isLoading}
           disabled={isLoading}
-          className="w-full mt-3 h-8 rounded-[8px] bg-[#5A42DE] hover:bg-[#4E37CC] text-[11px]"
+          className="w-full mt-4 h-12 rounded-xl bg-[#5A42DE] hover:bg-[#4E37CC] text-white text-[14px] font-semibold transition-all duration-200"
         >
-          Proceed
+          Proceed to Payment
         </Button>
       </div>
     </div>
