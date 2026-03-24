@@ -225,18 +225,10 @@ export async function sendOTP(phoneNumber: string): Promise<{ success: boolean; 
   }
 }
 
-// Mock SMS provider function - replace with actual integration
+
 async function sendSMSViaProvider(phoneNumber: string, message: string): Promise<{ success: boolean; error?: string }> {
   try {
-    // TODO: Replace with actual SMS provider integration (Twilio, AWS SNS, etc.)
-    // Example with Twilio:
-    // const twilio = require('twilio');
-    // const client = twilio(accountSid, authToken);
-    // await client.messages.create({
-    //   body: message,
-    //   from: process.env.TWILIO_PHONE_NUMBER,
-    //   to: phoneNumber
-    // });
+     });
 
     // For now, simulate successful SMS sending
     console.log(`[MOCK_SMS] To: ${phoneNumber}, Message: ${message}`);
