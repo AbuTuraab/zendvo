@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { recipient, amount, currency = "USDC", message, template } = body;
+    const { recipient, amount, currency = "USDC", message, template, coverImageId } = body;
 
     // Validate required fields
     if (!recipient || !amount) {
@@ -82,6 +82,7 @@ export async function POST(request: NextRequest) {
     // Sanitize optional fields
     const sanitizedMessage = message ? sanitizeInput(message) : null;
     const sanitizedTemplate = template ? sanitizeInput(template) : null;
+    const sanitizedCoverImageId = coverImageId ? sanitizeInput(String(coverImageId)) : null;
 
     // Create gift record
     const [newGift] = await db
@@ -93,6 +94,7 @@ export async function POST(request: NextRequest) {
         currency: currency.toUpperCase(),
         message: sanitizedMessage,
         template: sanitizedTemplate,
+        coverImageId: sanitizedCoverImageId,
         status: "pending_otp",
       })
       .returning();
