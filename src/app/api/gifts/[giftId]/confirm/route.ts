@@ -21,6 +21,9 @@ export async function POST(
 
     const { giftId } = await params;
 
+    const body = await request.json().catch(() => ({}));
+    const blockchainTxHash = body.blockchain_tx_hash || body.blockchainTxHash || null;
+
     // Fetch the gift with sender info
     const gift = await db.query.gifts.findFirst({
       where: eq(gifts.id, giftId),
@@ -121,7 +124,7 @@ export async function POST(
       // Update gift status to completed
       await tx
         .update(gifts)
-        .set({ status: "completed", transactionId })
+        .set({ status: "completed", transactionId, blockchainTxHash })
         .where(eq(gifts.id, giftId));
     });
 
